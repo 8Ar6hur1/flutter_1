@@ -13,7 +13,7 @@ class ErrorScreen extends StatelessWidget {
 
     return const MaterialApp(
       home: Scaffold(
-        backgroundColor: AppColor.backgroundColor,
+        backgroundColor: AppColor.mainBackgroundColor,
         body: Center(
           child: Text(
             "Зачекайте будь ласка",

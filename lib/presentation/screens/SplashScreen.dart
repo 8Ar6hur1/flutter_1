@@ -7,13 +7,13 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 8), () {
+    Future.delayed(const Duration(seconds: 10), () {
       Navigator.pushNamed(context, AppRoutes.firstScreen);
     });
 
     return const MaterialApp(
       home: Scaffold(
-        backgroundColor: AppColor.backgroundColor,
+        backgroundColor: AppColor.mainBackgroundColor,
         body: Center(
           child: Text(
             "Hi!\n"
@@ -21,7 +21,7 @@ class SplashScreen extends StatelessWidget {
             "to show\n"
             "what a cool developer I am)))",
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColor.textColor, fontSize: 35),
+            style: TextStyle(color: AppColor.textColor, fontSize: 30),
           ),
         ),
       ),
