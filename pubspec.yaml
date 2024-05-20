@@ -37,6 +37,9 @@ dependencies:
   cupertino_icons: ^1.0.6
   connectivity_plus: ^6.0.3
   geolocator: ^11.0.0
+  permission_handler: ^11.3.1
+  flutter_svg: ^2.0.10+1
+  google_maps_flutter: ^2.6.1
 
 dev_dependencies:
   flutter_test:
@@ -61,9 +64,15 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/buttons/active/active_orders.svg
+    - assets/buttons/active/active_home.svg
+    - assets/buttons/active/active_profile.svg
+    - assets/buttons/nonactive/nonactive_orders.svg
+    - assets/buttons/nonactive/nonactive_home.svg
+    - assets/buttons/nonactive/nonactive_profile.svg
+    - assets/groups/bg_car.svg
+    - assets/icons/telephone.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

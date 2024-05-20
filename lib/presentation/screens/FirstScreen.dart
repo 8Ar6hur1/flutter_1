@@ -1,9 +1,13 @@
 import 'dart:async';
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_1/data/dataSources/LocationPermissionDataSource.dart';
+import 'package:flutter_1/domain/usecases/InternetConnectCheckerDataSourceUseCase.dart';
+import 'package:flutter_1/domain/usecases/LocationPermissionUseCase.dart';
 import 'package:flutter_1/presentation/routes/AppRoutes.dart';
 import 'package:flutter_1/utils/AppColor.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FirstScreen extends StatefulWidget {
   const FirstScreen({super.key});
@@ -17,18 +21,126 @@ class FirstScreen extends StatefulWidget {
 class _FirstScreenState extends State<FirstScreen> {
   final TextEditingController _controller = TextEditingController();
 
-  bool _fieldNotEmpty = false;
+  final _internetChecker =
+      InternetConnectCheckerDataSourceUseCase(Connectivity());
+  late final LocationPermissionUseCase _locationPermissionUseCase;
 
+  bool _fieldNotEmpty = false;
   bool _isLoading = false;
 
-  void _startLoading() {
+  @override
+  void initState() {
+    super.initState();
+    _locationPermissionUseCase = LocationPermissionUseCase();
+  }
+
+  void _startLoading() async {
     setState(() {
       _isLoading = true;
     });
 
-    Timer(const Duration(seconds: 1), () {
-      Navigator.pushNamed(context, AppRoutes.secondScreen);
-    });
+    bool isConnected = await _internetChecker.isInternetAvailable();
+    if (isConnected) {
+      Timer(const Duration(seconds: 1), () {
+        Navigator.pushNamed(context, AppRoutes.secondScreen);
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: const Text(
+                'Відсутнє інтернет-з\'єднання. Перевірте ваше з\'єднання та спробуйте ще раз.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void requestLocationPermission() async {
+    var status = await _locationPermissionUseCase.requestLocationPermission();
+
+    if (status.isGranted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text("Дозвіл на геолокацію надано."),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else if (status.isDenied) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text("Відмова у наданні дозволу на геолокацію."),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else if (status.isPermanentlyDenied) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text(
+                "Постійна відмова у наданні дозволу на геолокацію. Будь ласка, змініть налаштування вручну."),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else if (status.isRestricted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text("Доступ до геолокації обмежений."),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -63,7 +175,7 @@ class _FirstScreenState extends State<FirstScreen> {
                 ),
                 const Padding(padding: EdgeInsets.only(top: 28)),
                 SizedBox(
-                  width: 350,
+                  width: MediaQuery.of(context).size.width - 40,
                   height: 50,
                   child: TextField(
                     controller: _controller,
@@ -99,12 +211,38 @@ class _FirstScreenState extends State<FirstScreen> {
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: SizedBox(
-                        width: 350,
+                        width: MediaQuery.of(context).size.width - 40,
                         height: 50,
                         child: TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_fieldNotEmpty) {
-                              _isLoading ? null : _startLoading();
+                              bool isConnected =
+                                  await _internetChecker.isInternetAvailable();
+                              if (isConnected) {
+                                requestLocationPermission();
+                                _isLoading ? null : _startLoading();
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: const Text(
+                                        'Відсутнє інтернет-з\'єднання. Перевірте ваше з\'єднання та спробуйте ще раз.',
+                                        style: TextStyle(
+                                            color: AppColor.textColor),
+                                      ),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: const Text('OK'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
                             } else {
                               showDialog(
                                   context: context,

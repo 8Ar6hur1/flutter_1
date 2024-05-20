@@ -14,7 +14,7 @@ class AppRoutes {
       case splashScreen:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case firstScreen:
-        return MaterialPageRoute(builder: (_) => FirstScreen());
+        return MaterialPageRoute(builder: (_) => const FirstScreen());
       case secondScreen:
         return MaterialPageRoute(builder: (_) => const SecondScreen());
       default:
