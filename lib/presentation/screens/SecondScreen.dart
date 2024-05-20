@@ -21,12 +21,20 @@ class _SecondScreenState extends State<SecondScreen> {
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColor.elementColor,
-          title: const Center(
-            child: Text(
-              "logo",
-              style: TextStyle(color: AppColor.textColor, fontSize: 18),
-            ),
+          title: const Text(
+            "logo",
+            style: TextStyle(color: AppColor.textColor, fontSize: 18),
           ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () {},
+                icon: SvgPicture.asset(
+                  'assets/icons/telephone.svg',
+                  width: 25,
+                  height: 25,
+                ))
+          ],
         ),
         backgroundColor: AppColor.mainBackgroundColor,
         body: Stack(
